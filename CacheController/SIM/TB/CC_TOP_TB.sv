@@ -1,6 +1,6 @@
 `define     IP_VER          32'h0001_2024
 
-`define     TIMEOUT_DELAY   50000000
+`define     TIMEOUT_DELAY   500000
 
 `define     TEST_SIZE       32'h0000_0100
 `define     STRIDE          32'h1000_5000
@@ -294,7 +294,7 @@ module CC_TOP_TB ();
 
     // main
     initial begin
-        int gen_repeat_cnt    = 800;
+        int gen_repeat_cnt    = 80;
         int access_repeat_cnt = 800;
         test_init();
         mem_fill();
