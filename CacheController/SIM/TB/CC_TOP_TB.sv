@@ -294,7 +294,7 @@ module CC_TOP_TB ();
 
     // main
     initial begin
-        int gen_repeat_cnt    = 80;
+        int gen_repeat_cnt    = 800;
         int access_repeat_cnt = 800;
         test_init();
         mem_fill();
