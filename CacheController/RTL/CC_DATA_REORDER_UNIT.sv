@@ -121,7 +121,7 @@ module CC_DATA_REORDER_UNIT
 
     end
 
-    CC_FIFO #(.FIFO_DEPTH('d2), .DATA_WIDTH('d1), .AFULL_THRESHOLD('d1)) u_hit_flag_fifo(
+    CC_FIFO #(.FIFO_DEPTH('d4), .DATA_WIDTH('d1), .AFULL_THRESHOLD('d2)) u_hit_flag_fifo(
         .clk            (clk),
         .rst_n          (rst_n),
         .full_o         (),
