@@ -106,8 +106,10 @@ module CC_DATA_REORDER_UNIT
         // Determine serializer_rready and mem_rready (output of DATA REORDER UNIT) // IMPORTANT
         if (!hit_flag_fifo_rdata & hit_flag_fifo_rden)      mem_rready          = 1'b1;
         else if (mem_rlast)                                 mem_rready          = 1'b0;
+        else mem_rready = 1'b0;
         if (hit_flag_fifo_rdata & hit_flag_fifo_rden)       serializer_rready   = 1'b1;
         else if (serializer_rlast)                          serializer_rready   = 1'b0;
+        else serializer_rready = 1'b0;
 
         // Mux between data/last from [MC R Channel] & [Data FIFO]
         if(hit_n)begin 
