@@ -84,6 +84,13 @@ module CC_DATA_REORDER_UNIT
     always_comb begin
         mem_rlast_n         = mem_rlast_i;
         cnt_n               = cnt;
+        // Latch Problem 
+        hit_flag_fifo_rden = 1'b0;
+        mem_rready = 1'b0;
+        serializer_rready = 1'b0;
+        inct_rdata = 64'b0;
+        inct_rlast = 1'b0;
+
 
         // Determine hit_n
         if (hit_flag_fifo_rden)                 hit_n = hit_flag_fifo_rdata;
