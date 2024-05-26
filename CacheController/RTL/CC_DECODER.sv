@@ -33,17 +33,3 @@ module CC_DECODER
     assign hs_pulse_o = inct_arvalid_i & inct_arready_o;
 
 endmodule
-
-// reg ready_gen;    
-    // reg hs_pulse;
-
-    // always_comb begin
-    //     ready_gen   = ~(miss_addr_fifo_afull_i || miss_req_fifo_afull_i || hit_flag_fifo_afull_i || hit_data_fifo_afull_i);
-    //     hs_pulse    = ready_gen & inct_arvalid_i;
-    // end
-
-    // assign hs_pulse_o       = hs_pulse;
-    // assign inct_arready_o   = ready_gen;
-    // assign tag_o            = inct_araddr_i[31:15];
-    // assign index_o          = inct_araddr_i[14:6];
-    // assign offset_o         = inct_araddr_i[5:0];
