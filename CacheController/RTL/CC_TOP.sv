@@ -137,7 +137,7 @@ module CC_TOP
         .miss_o                 (miss)                  // USER DEFINED
     );
 
-    CC_FIFO #(.FIFO_DEPTH('d16), .DATA_WIDTH(), .AFULL_THRESHOLD('d14)) u_miss_req_fifo( // PROBLEM!!
+    CC_FIFO #(.FIFO_DEPTH('d2), .DATA_WIDTH(), .AFULL_THRESHOLD('d1)) u_miss_req_fifo( // PROBLEM!!
         .clk                    (clk),
         .rst_n                  (rst_n),
         .full_o                 (),                               // USER DEFINED
@@ -150,7 +150,7 @@ module CC_TOP
         .rdata_o                (mem_araddr_o)                                        // IMPORTANT
     );
 
-    CC_FIFO #(.FIFO_DEPTH('d16), .DATA_WIDTH(), .AFULL_THRESHOLD('d14)) u_miss_addr_fifo(
+    CC_FIFO #(.FIFO_DEPTH('d2), .DATA_WIDTH(), .AFULL_THRESHOLD('d1)) u_miss_addr_fifo(
         .clk                    (clk),
         .rst_n                  (rst_n),
         .full_o                 (),                              // USER DEFINED
