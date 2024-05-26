@@ -44,7 +44,7 @@ module CC_SERIALIZER
     reg         [63:0]          fifo_rdata_7, fifo_rdata_7_n;
     reg                         rlast;
     reg                         rvalid, rvalid_n;
-    reg                         start;
+    reg                         start, start_n;
     reg         [2:0]           cnt, cnt_n;
     reg         [2:0]           ptr;
     reg         [2:0]           offset, offset_n;
@@ -63,6 +63,8 @@ module CC_SERIALIZER
             offset                  <= 'b0;
             rvalid                 <= 1'b0; 
             fifo_rden               <= 1'b0;
+            rdata                   <= 'b0;
+            start                   <= 1'b0;
         end
         else begin
             cnt     <= cnt_n;
@@ -77,6 +79,8 @@ module CC_SERIALIZER
             offset                     <= offset_n;
             rvalid                 <= rvalid_n;
             fifo_rden               <= fifo_rden_n;
+            rdata                   <= rdata_n;
+            start                   <= start_n;
         end
     end
 
@@ -84,6 +88,8 @@ module CC_SERIALIZER
         // Latch problem 
         rvalid_n = rvalid;
         fifo_rden_n = fifo_rden;
+        rdata_n = rdata;
+        start_n = start;
 
         // Determine rvalid output: Serializer -> INTC
         if (!fifo_empty_i) rvalid_n = 1'b1;
@@ -120,23 +126,23 @@ module CC_SERIALIZER
         // Determine ptr for selecting which 64b data buffer to send to rdata_o 
         // -> Serializing
         ptr                     = (offset_n+cnt)%8;
-        if     (ptr==0) rdata = fifo_rdata_0_n;
-        else if(ptr==1) rdata = fifo_rdata_1_n;
-        else if(ptr==2) rdata = fifo_rdata_2_n;
-        else if(ptr==3) rdata = fifo_rdata_3_n;
-        else if(ptr==4) rdata = fifo_rdata_4_n;
-        else if(ptr==5) rdata = fifo_rdata_5_n;
-        else if(ptr==6) rdata = fifo_rdata_6_n;
-        else if(ptr==7) rdata = fifo_rdata_7_n;
+        if     (ptr==0) rdata_n = fifo_rdata_0_n;
+        else if(ptr==1) rdata_n = fifo_rdata_1_n;
+        else if(ptr==2) rdata_n = fifo_rdata_2_n;
+        else if(ptr==3) rdata_n = fifo_rdata_3_n;
+        else if(ptr==4) rdata_n = fifo_rdata_4_n;
+        else if(ptr==5) rdata_n = fifo_rdata_5_n;
+        else if(ptr==6) rdata_n = fifo_rdata_6_n;
+        else if(ptr==7) rdata_n = fifo_rdata_7_n;
 
         // Determine start signal for wrapping burst (check handshake between INTC and Serializer)
-        if (rvalid_n && rready_i) start = 1'b1;
+        if (rvalid_n && rready_i) start_n = 1'b1;
         
         // Do wrapping burst
         if (cnt==7) begin
             cnt_n               = 'd0;
             rlast               = 1'b1;
-            start               = 1'b0;
+            start_n               = 1'b0;
         end
         else if (start) begin
             cnt_n               = cnt+1;
@@ -150,7 +156,7 @@ module CC_SERIALIZER
     end
 
     assign fifo_rden_o  = fifo_rden_n;
-    assign rdata_o      = rdata;
+    assign rdata_o      = rdata_n;
     assign rlast_o      = rlast;
     assign rvalid_o     = rvalid_n;
 
