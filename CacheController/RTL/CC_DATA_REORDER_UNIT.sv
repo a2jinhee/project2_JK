@@ -171,7 +171,7 @@ module CC_DATA_REORDER_UNIT
     );
 
 
-    assign mem_rready_o             = mem_rready; 
+    assign mem_rready_o             = mem_rready_n; 
     assign hit_flag_fifo_afull_o    = hit_flag_fifo_afull;
     assign hit_data_fifo_afull_o    = hit_data_fifo_afull;
     assign inct_rdata_o             = inct_rdata;
