@@ -60,13 +60,15 @@ module CC_DATA_FILL_UNIT
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
         enable_n = enable;
 
+        cnt_n = cnt; 
+
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
         else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
         
         // Determine enable // IMPORTANT
         if (miss_addr_fifo_rden_n)    enable_n = 1'b1;
-        else if (cnt_n==7)          enable_n = 1'b0;
+        else if (cnt==7)          enable_n = 1'b0;
 
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
