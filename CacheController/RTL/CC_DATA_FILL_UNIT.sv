@@ -88,6 +88,9 @@ module CC_DATA_FILL_UNIT
             else if(wrptr==6)   wdata_data[447:384] = mem_rdata_i;
             else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
         end    
+        else begin
+            wdata_data = 512'b0;
+        end
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         
         // Increment cnt for bursting: Deserialize the data
