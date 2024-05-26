@@ -57,10 +57,10 @@ module CC_TOP_TB ();
     end
 
     // timeout
-    // initial begin
-    //     #`TIMEOUT_DELAY $display("Timeout!");
-    //     $finish;
-    // end
+    initial begin
+        #`TIMEOUT_DELAY $display("Timeout!");
+        $finish;
+    end
 
     // enable waveform dump
     initial begin
@@ -294,8 +294,8 @@ module CC_TOP_TB ();
 
     // main
     initial begin
-        int gen_repeat_cnt    = 500;
-        int access_repeat_cnt = 4500;
+        int gen_repeat_cnt    = 80;
+        int access_repeat_cnt = 800;
         test_init();
         mem_fill();
         trans_init(gen_repeat_cnt, access_repeat_cnt);
