@@ -63,6 +63,7 @@ module CC_TOP
     // You can modify the code in the module block.
     // USER DEFINED means that the names were not given in the skeleton code. 
     // IMPORTANT means that I should look over again to make sure. 
+    // git confirmation: A2JINHEE
 
     // CC_FIFO - u_miss_req_fifo
     wire miss_req_fifo_afull;
