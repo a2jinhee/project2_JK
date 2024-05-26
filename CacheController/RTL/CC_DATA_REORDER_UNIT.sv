@@ -82,6 +82,11 @@ module CC_DATA_REORDER_UNIT
 
     // Combinational logic
     always_comb begin
+        // Latch problem 
+        hit_flag_fifo_rden = 1'b0;
+        mem_rready          = 1'b0;
+        serializer_rready   = 1'b0;
+
         mem_rlast_n         = mem_rlast_i;
         cnt_n               = cnt;
 
@@ -117,6 +122,10 @@ module CC_DATA_REORDER_UNIT
         else if(!hit_n) begin
             inct_rdata = mem_rdata_i;
             inct_rlast = mem_rlast_i;
+        end
+        else begin
+            inct_rdata = 64'b0;
+            inct_rlast = 1'b0;
         end
 
     end
