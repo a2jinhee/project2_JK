@@ -34,7 +34,7 @@ module CC_DATA_REORDER_UNIT
     // CC_FIFO - u_hit_flag_fifo
     reg hit_flag_fifo_afull; 
     reg hit_flag_fifo_empty;
-    reg hit_flag_fifo_rden;
+    reg hit_flag_fifo_rden, hit_flag_fifo_rden_n;
     reg hit_flag_fifo_rdata;
     // CC_FIFO - u_hit_data_fifo
     reg hit_data_fifo_afull;
@@ -73,6 +73,7 @@ module CC_DATA_REORDER_UNIT
             serializer_rlast    <= 1'b0;
             mem_rready          <= 1'b0;
             serializer_rready   <= 1'b0;
+            hit_flag_fifo_rden  <= 1'b0;
         end
         else begin
             cnt                 <= cnt_n;
@@ -81,6 +82,7 @@ module CC_DATA_REORDER_UNIT
             serializer_rlast    <= serializer_rlast_n;
             mem_rready          <= mem_rready_n;
             serializer_rready   <= serializer_rready_n;
+            hit_flag_fifo_rden  <= hit_flag_fifo_rden_n;
         end
     end
 
@@ -90,15 +92,16 @@ module CC_DATA_REORDER_UNIT
         cnt_n               = cnt;
         mem_rready_n        = mem_rready;
         serializer_rready_n = serializer_rready;
+        hit_flag_fifo_rden_n = hit_flag_fifo_rden;
 
         // Determine hit_flag_fifo_rden
         if (!hit_flag_fifo_empty && inct_rready_i 
             && ( (!hit_flag_fifo_rdata&&mem_rvalid_i) || (hit_flag_fifo_rdata && serializer_rvalid) ) 
-            && (cnt=='b0))                      hit_flag_fifo_rden  = 1'b1;
-        else if ((cnt!=0))                      hit_flag_fifo_rden = 1'b0;
+            && (cnt=='b0))                      hit_flag_fifo_rden_n  = 1'b1;
+        else if ((cnt!=0))                      hit_flag_fifo_rden_n = 1'b0;
         
         // Determine hit_n
-        if (hit_flag_fifo_rden)                 hit_n = hit_flag_fifo_rdata;
+        if (hit_flag_fifo_rden_n)                 hit_n = hit_flag_fifo_rdata;
         else if (serializer_rlast||mem_rlast)   hit_n = hit_flag_fifo_rdata;
         else                                    hit_n = hit;
 
@@ -110,9 +113,9 @@ module CC_DATA_REORDER_UNIT
         else if (inct_rready_i && inct_rvalid)      cnt_n = cnt+1;
 
         // Determine serializer_rready and mem_rready (output of DATA REORDER UNIT) // IMPORTANT
-        if (!hit_flag_fifo_rdata & hit_flag_fifo_rden)      mem_rready_n          = 1'b1;
+        if (!hit_flag_fifo_rdata & hit_flag_fifo_rden_n)      mem_rready_n          = 1'b1;
         else if (mem_rlast)                                 mem_rready_n          = 1'b0;
-        if (hit_flag_fifo_rdata & hit_flag_fifo_rden)       serializer_rready_n   = 1'b1;
+        if (hit_flag_fifo_rdata & hit_flag_fifo_rden_n)       serializer_rready_n   = 1'b1;
         else if (serializer_rlast)                          serializer_rready_n   = 1'b0;
 
         // Mux between data/last from [MC R Channel] & [Data FIFO]
@@ -140,7 +143,7 @@ module CC_DATA_REORDER_UNIT
         .wdata_i        (hit_flag_fifo_wdata_i),
         .empty_o        (hit_flag_fifo_empty),                          // USER DEFINED
         .aempty_o       (),
-        .rden_i         ((hit_flag_fifo_rden&!hit_flag_fifo_empty)),    // USER DEFINED, IMPORTANT
+        .rden_i         ((hit_flag_fifo_rden_n&!hit_flag_fifo_empty)),    // USER DEFINED, IMPORTANT
         .rdata_o        (hit_flag_fifo_rdata)                           // USER DEFINED
     );
 
