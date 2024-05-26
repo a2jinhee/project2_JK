@@ -62,8 +62,8 @@ module CC_DATA_FILL_UNIT
         else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
         
         // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden_n)    enable_n <= 1'b1;
-        else if (cnt_n==7)          enable_n <= 1'b0;
+        if (miss_addr_fifo_rden_n)    enable <= 1'b1;
+        else if (cnt_n==7)          enable <= 1'b0;
 
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
@@ -78,7 +78,7 @@ module CC_DATA_FILL_UNIT
         wrptr = (offset_n+cnt) % 8;
 
         // Choose the data to write: Deserialize the data
-        if(enable_n) begin
+        if(enable) begin
             if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
             else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
             else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
@@ -95,7 +95,7 @@ module CC_DATA_FILL_UNIT
             wren    = 'd1;
             cnt_n   = 'd0;
         end
-        else if(enable_n)begin
+        else if(enable)begin
             wren    = 'd0;
             cnt_n   = cnt+1;
         end
