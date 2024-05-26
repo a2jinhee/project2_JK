@@ -31,7 +31,7 @@ module CC_DATA_FILL_UNIT
     reg     [511:0]         wdata_data;
     reg     [2:0]           cnt, cnt_n;
     reg     [2:0]           wrptr;
-    reg                     enable;
+    reg                     enable, enable_n;
     reg     [2:0]           offset, offset_n;
 
     // State machine flip-flop
@@ -42,6 +42,7 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
             miss_addr_fifo_rden <= 1'b0;
+            enable          <= 1'b0;
         end     
         else begin
             cnt             <= cnt_n;
@@ -49,6 +50,7 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
             miss_addr_fifo_rden <= miss_addr_fifo_rden_n;
+            enable          <= enable_n;
         end 
     end 
 
@@ -56,6 +58,7 @@ module CC_DATA_FILL_UNIT
     always_comb begin
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
+        enable_n = enable;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
@@ -74,7 +77,6 @@ module CC_DATA_FILL_UNIT
         wrptr = (offset_n+cnt) % 8;
 
         // Choose the data to write: Deserialize the data
-        
         if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
         else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
         else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
@@ -86,15 +88,15 @@ module CC_DATA_FILL_UNIT
         
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden_n)    enable = 1'b1;
-        else if (cnt==7)          enable = 1'b0;
+        if (miss_addr_fifo_rden_n)    enable_n = 1'b1;
+        else if (cnt==7)          enable_n = 1'b0;
         
         // Increment cnt for bursting: Deserialize the data
         if(cnt==7)begin
             wren    = 'd1;
             cnt_n   = 'd0;
         end
-        else if(enable)begin
+        else if(enable_n)begin
             wren    = 'd0;
             cnt_n   = cnt+1;
         end
