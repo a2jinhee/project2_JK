@@ -52,6 +52,11 @@ module CC_DATA_FILL_UNIT
 
     // Combinational logic
     always_comb begin
+        // Latch problem
+        enable <= 1'b0; 
+        miss_addr_fifo_rden = 1'b0;
+        wdata_data = 512'b0;
+
         // Determine enable // IMPORTANT
         if (miss_addr_fifo_rden)    enable <= 1'b1;
         else if (cnt_n==7)          enable <= 1'b0;
