@@ -42,7 +42,7 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
             miss_addr_fifo_rden <= 1'b0;
-            enable_n        <= 1'b0;
+            enable           <= 1'b0;
         end     
         else begin
             cnt             <= cnt_n;
