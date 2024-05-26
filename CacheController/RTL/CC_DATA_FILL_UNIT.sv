@@ -61,7 +61,7 @@ module CC_DATA_FILL_UNIT
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
         enable_n = enable;
-        wdata_data = wdata_data_n;
+        wdata_data_n = wdata_data;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
