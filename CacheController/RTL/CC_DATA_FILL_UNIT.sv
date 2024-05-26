@@ -43,7 +43,7 @@ module CC_DATA_FILL_UNIT
             offset          <= 3'b0;
             miss_addr_fifo_rden = 1'b0;
             enable          <= 1'b0;
-            wdata_data      <= 512'b0;
+            wdata_data    <= 512'b0;
         end     
         else begin
             cnt             <= cnt_n;
@@ -52,7 +52,7 @@ module CC_DATA_FILL_UNIT
             offset          <= offset_n;
             miss_addr_fifo_rden = miss_addr_fifo_rden_n;
             enable          <= enable_n;
-            wdata_data      <= wdata_data_n;
+            wdata_data    <= wdata_data_n;
         end 
     end 
 
@@ -60,15 +60,15 @@ module CC_DATA_FILL_UNIT
     always_comb begin
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
-        // wdata_data_n = wdata_data;
+        wdata_data_n = wdata_data;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
         else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
         
         // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden_n)    enable_n <= 1'b1;
-        else if (cnt_n==7)          enable_n <= 1'b0;
+        if (miss_addr_fifo_rden_n)    enable_n = 1'b1;
+        else if (cnt_n==7)          enable_n = 1'b0;
 
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
@@ -92,11 +92,7 @@ module CC_DATA_FILL_UNIT
             else if(wrptr==5)   wdata_data_n[383:320] = mem_rdata_i;
             else if(wrptr==6)   wdata_data_n[447:384] = mem_rdata_i;
             else if(wrptr==7)   wdata_data_n[511:448] = mem_rdata_i;
-            else               wdata_data_n = wdata_data;
         end    
-        else begin
-            wdata_data_n = wdata_data;
-        end
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         
         // Increment cnt for bursting: Deserialize the data
