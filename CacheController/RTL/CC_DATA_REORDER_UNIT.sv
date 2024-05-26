@@ -167,7 +167,7 @@ module CC_DATA_REORDER_UNIT
         .rdata_o        (serializer_rdata),             // USER DEFINED
         .rlast_o        (serializer_rlast_n),           // USER DEFINED
         .rvalid_o       (serializer_rvalid),            // USER DEFINED
-        .rready_i       (serializer_rready)             // USER DEFINED
+        .rready_i       (serializer_rready_n)             // USER DEFINED
     );
 
 
