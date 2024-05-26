@@ -31,7 +31,7 @@ module CC_DATA_FILL_UNIT
     reg     [511:0]         wdata_data;
     reg     [2:0]           cnt, cnt_n;
     reg     [2:0]           wrptr;
-    reg                     enable, enable_n;
+    reg                     enable;
     reg     [2:0]           offset, offset_n;
 
     // State machine flip-flop
@@ -42,7 +42,6 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
             miss_addr_fifo_rden <= 1'b0;
-            enable          <= 1'b0;
         end     
         else begin
             cnt             <= cnt_n;
@@ -50,7 +49,6 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
             miss_addr_fifo_rden <= miss_addr_fifo_rden_n;
-            enable          <= enable_n;
         end 
     end 
 
@@ -58,13 +56,15 @@ module CC_DATA_FILL_UNIT
     always_comb begin
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
-        enable_n = enable;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
         else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
         
-        
+        // Determine enable // IMPORTANT
+        if (miss_addr_fifo_rden_n)    enable_n <= 1'b1;
+        else if (cnt_n==7)          enable_n <= 1'b0;
+
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
         if(miss_addr_fifo_rden_n)         waddr_n = miss_addr_fifo_rdata_i[14:6];
@@ -89,10 +89,6 @@ module CC_DATA_FILL_UNIT
             else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
         end    
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
-
-        // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden_n)    enable_n = 1'b1;
-        else if (cnt_n==7)          enable_n = 1'b0;
         
         // Increment cnt for bursting: Deserialize the data
         if(cnt==7)begin
