@@ -28,7 +28,7 @@ module CC_DATA_FILL_UNIT
     reg                     wren;
     reg     [8:0]           waddr, waddr_n;
     reg     [17:0]          wdata_tag, wdata_tag_n;
-    reg     [511:0]         wdata_data, wdata_data_n;
+    reg     [511:0]         wdata_data;
     reg     [2:0]           cnt, cnt_n;
     reg     [2:0]           wrptr;
     reg                     enable;
@@ -42,7 +42,6 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
             miss_addr_fifo_rden <= 1'b0;
-            wdata_data      <= 512'b0;
         end     
         else begin
             cnt             <= cnt_n;
@@ -50,7 +49,6 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
             miss_addr_fifo_rden <= miss_addr_fifo_rden_n;
-            wdata_data      <= wdata_data_n;
         end 
     end 
 
@@ -58,7 +56,6 @@ module CC_DATA_FILL_UNIT
     always_comb begin
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
-        wdata_data_n = wdata_data;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
@@ -82,14 +79,14 @@ module CC_DATA_FILL_UNIT
 
         // Choose the data to write: Deserialize the data
         if(enable) begin
-            if(wrptr==0)        wdata_data_n[63:0]    = mem_rdata_i;
-            else if(wrptr==1)   wdata_data_n[127:64]  = mem_rdata_i;
-            else if(wrptr==2)   wdata_data_n[191:128] = mem_rdata_i;
-            else if(wrptr==3)   wdata_data_n[255:192] = mem_rdata_i;
-            else if(wrptr==4)   wdata_data_n[319:256] = mem_rdata_i;
-            else if(wrptr==5)   wdata_data_n[383:320] = mem_rdata_i;
-            else if(wrptr==6)   wdata_data_n[447:384] = mem_rdata_i;
-            else if(wrptr==7)   wdata_data_n[511:448] = mem_rdata_i;
+            if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
+            else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
+            else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
+            else if(wrptr==3)   wdata_data[255:192] = mem_rdata_i;
+            else if(wrptr==4)   wdata_data[319:256] = mem_rdata_i;
+            else if(wrptr==5)   wdata_data[383:320] = mem_rdata_i;
+            else if(wrptr==6)   wdata_data[447:384] = mem_rdata_i;
+            else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
         end    
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         
@@ -112,7 +109,7 @@ module CC_DATA_FILL_UNIT
     assign wren_o                   = wren;
     assign waddr_o                  = waddr;
     assign wdata_tag_o              = wdata_tag;
-    assign wdata_data_o             = wdata_data_n;
+    assign wdata_data_o             = wdata_data;
 
 
 endmodule
