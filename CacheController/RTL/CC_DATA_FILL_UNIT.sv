@@ -24,7 +24,7 @@ module CC_DATA_FILL_UNIT
 );
 
     // Fill the code here
-    reg                     miss_addr_fifo_rden;
+    reg                     miss_addr_fifo_rden, miss_addr_fifo_rden_n;
     reg                     wren;
     reg     [8:0]           waddr, waddr_n;
     reg     [17:0]          wdata_tag, wdata_tag_n;
@@ -41,33 +41,37 @@ module CC_DATA_FILL_UNIT
             waddr           <= 9'b0;
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
+            miss_addr_fifo_rden = 1'b0;
         end     
         else begin
             cnt             <= cnt_n;
             waddr           <= waddr_n;
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
+            miss_addr_fifo_rden = miss_addr_fifo_rden_n;
         end 
     end 
 
     // Combinational logic
     always_comb begin
+        // Latch problem 
+        miss_addr_fifo_rden_n = miss_addr_fifo_rden;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
-        if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden =1'b1;
-        else if ((cnt!=0))                              miss_addr_fifo_rden = 1'b0;
+        if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
+        else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
         
         // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden)    enable <= 1'b1;
+        if (miss_addr_fifo_rden_n)    enable <= 1'b1;
         else if (cnt_n==7)          enable <= 1'b0;
 
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
-        if(miss_addr_fifo_rden)         waddr_n = miss_addr_fifo_rdata_i[14:6];
+        if(miss_addr_fifo_rden_n)         waddr_n = miss_addr_fifo_rdata_i[14:6];
         else                            waddr_n = waddr;
-        if(miss_addr_fifo_rden)         wdata_tag_n = {1'b1,miss_addr_fifo_rdata_i[31:15]};
+        if(miss_addr_fifo_rden_n)         wdata_tag_n = {1'b1,miss_addr_fifo_rdata_i[31:15]};
         else                            wdata_tag_n = wdata_tag;
-        if(miss_addr_fifo_rden)         offset_n = miss_addr_fifo_rdata_i[5:3];
+        if(miss_addr_fifo_rden_n)         offset_n = miss_addr_fifo_rdata_i[5:3];
         else                            offset_n = offset;
 
         // Increment by cnt: Deserialize the data
@@ -101,7 +105,7 @@ module CC_DATA_FILL_UNIT
         end
     end
 
-    assign miss_addr_fifo_rden_o    = miss_addr_fifo_rden;
+    assign miss_addr_fifo_rden_o    = miss_addr_fifo_rden_n;
     assign wren_o                   = wren;
     assign waddr_o                  = waddr;
     assign wdata_tag_o              = wdata_tag;
