@@ -45,14 +45,14 @@ module CC_DATA_REORDER_UNIT
     reg [63:0]      serializer_rdata;
     reg serializer_rlast, serializer_rlast_n;
     reg serializer_rvalid;
-    reg serializer_rready;
+    reg serializer_rready, serializer_rready_n;
     // INCT and CC (R channel)
     reg [63:0] inct_rdata; 
     reg inct_rlast, inct_rlast_n;
     reg inct_rvalid;
     // misc // IMPORTANT
     reg [2:0] cnt, cnt_n;
-    reg mem_rready;
+    reg mem_rready, mem_rready_n;
     reg mem_rlast, mem_rlast_n; 
     reg hit, hit_n; 
 
@@ -71,12 +71,16 @@ module CC_DATA_REORDER_UNIT
             hit                 <= 1'b0;
             mem_rlast           <= 1'b0;
             serializer_rlast    <= 1'b0;
+            mem_rready          <= 1'b0;
+            serializer_rready   <= 1'b0;
         end
         else begin
             cnt                 <= cnt_n;
             hit                 <= hit_n;
             mem_rlast           <= mem_rlast_n;
             serializer_rlast    <= serializer_rlast_n;
+            mem_rready          <= mem_rready_n;
+            serializer_rready   <= serializer_rready_n;
         end
     end
 
@@ -84,6 +88,8 @@ module CC_DATA_REORDER_UNIT
     always_comb begin
         mem_rlast_n         = mem_rlast_i;
         cnt_n               = cnt;
+        mem_rready_n        = mem_rready;
+        serializer_rready_n = serializer_rready;
 
         // Determine hit_flag_fifo_rden
         if (!hit_flag_fifo_empty && inct_rready_i 
@@ -104,10 +110,10 @@ module CC_DATA_REORDER_UNIT
         else if (inct_rready_i && inct_rvalid)      cnt_n = cnt+1;
 
         // Determine serializer_rready and mem_rready (output of DATA REORDER UNIT) // IMPORTANT
-        if (!hit_flag_fifo_rdata & hit_flag_fifo_rden)      mem_rready          = 1'b1;
-        else if (mem_rlast)                                 mem_rready          = 1'b0;
-        if (hit_flag_fifo_rdata & hit_flag_fifo_rden)       serializer_rready   = 1'b1;
-        else if (serializer_rlast)                          serializer_rready   = 1'b0;
+        if (!hit_flag_fifo_rdata & hit_flag_fifo_rden)      mem_rready_n          = 1'b1;
+        else if (mem_rlast)                                 mem_rready_n          = 1'b0;
+        if (hit_flag_fifo_rdata & hit_flag_fifo_rden)       serializer_rready_n   = 1'b1;
+        else if (serializer_rlast)                          serializer_rready_n   = 1'b0;
 
         // Mux between data/last from [MC R Channel] & [Data FIFO]
         if(hit_n)begin 
