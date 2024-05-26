@@ -52,6 +52,11 @@ module CC_DATA_FILL_UNIT
 
     // Combinational logic
     always_comb begin
+        // Latch problem 
+        enable = 1'b0;  
+        miss_addr_fifo_rden = 1'b0;
+        wren = 1'b0;
+
         // Determine enable // IMPORTANT
         if (miss_addr_fifo_rden)    enable <= 1'b1;
         else if (cnt_n==7)          enable <= 1'b0;
@@ -81,7 +86,10 @@ module CC_DATA_FILL_UNIT
             else if(wrptr==5)   wdata_data[383:320] = mem_rdata_i;
             else if(wrptr==6)   wdata_data[447:384] = mem_rdata_i;
             else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
-        end    
+        end
+        else begin
+            wdata_data = wdata_data;
+        end
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         
         // Increment cnt for bursting: Deserialize the data
