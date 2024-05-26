@@ -60,7 +60,7 @@ module CC_DATA_FILL_UNIT
     always_comb begin
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
-        wdata_data_n = wdata_data;
+        // wdata_data_n = wdata_data;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
@@ -92,7 +92,11 @@ module CC_DATA_FILL_UNIT
             else if(wrptr==5)   wdata_data_n[383:320] = mem_rdata_i;
             else if(wrptr==6)   wdata_data_n[447:384] = mem_rdata_i;
             else if(wrptr==7)   wdata_data_n[511:448] = mem_rdata_i;
+            else               wdata_data_n = wdata_data;
         end    
+        else begin
+            wdata_data_n = wdata_data;
+        end
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         
         // Increment cnt for bursting: Deserialize the data
