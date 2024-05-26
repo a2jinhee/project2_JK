@@ -98,7 +98,6 @@ module CC_DATA_REORDER_UNIT
             && ( (!hit_flag_fifo_rdata&&mem_rvalid_i) || (hit_flag_fifo_rdata && serializer_rvalid) ) 
             && (cnt=='b0))                      hit_flag_fifo_rden  = 1'b1;
         else if ((cnt!=0))                      hit_flag_fifo_rden = 1'b0;
-        else hit_flag_fifo_rden = 1'b0;
 
         // Increment cnt for bursting
         if (cnt==7)                                 cnt_n = 'b0;
@@ -118,6 +117,10 @@ module CC_DATA_REORDER_UNIT
         else if(!hit_n) begin
             inct_rdata = mem_rdata_i;
             inct_rlast = mem_rlast_i;
+        end
+        else begin
+            inct_rdata = 64'b0;
+            inct_rlast = 1'b0;
         end
 
     end
