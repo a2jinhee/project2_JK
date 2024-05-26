@@ -82,21 +82,8 @@ module CC_DATA_REORDER_UNIT
 
     // Combinational logic
     always_comb begin
-        if(!rst_n) begin
-            hit_flag_fifo_rden = 1'b0;
-            mem_rready          = 1'b0;
-            serializer_rready   = 1'b0;
-        end
-
         mem_rlast_n         = mem_rlast_i;
         cnt_n               = cnt;
-
-        // Determine hit_flag_fifo_rden
-        if (!hit_flag_fifo_empty && inct_rready_i 
-            && ( (!hit_flag_fifo_rdata&&mem_rvalid_i) || (hit_flag_fifo_rdata && serializer_rvalid) ) 
-            && (cnt=='b0))                      hit_flag_fifo_rden  = 1'b1;
-        else if ((cnt!=0))                      hit_flag_fifo_rden = 1'b0;
-
 
         // Determine hit_n
         if (hit_flag_fifo_rden)                 hit_n = hit_flag_fifo_rdata;
@@ -106,7 +93,12 @@ module CC_DATA_REORDER_UNIT
         // Determine inct_rvalid = either mem_rvalid, or serializer_rvalid
         inct_rvalid        = (!hit_n&&mem_rvalid_i) || (hit_n&&serializer_rvalid);
 
-        
+        // Determine hit_flag_fifo_rden
+        if (!hit_flag_fifo_empty && inct_rready_i 
+            && ( (!hit_flag_fifo_rdata&&mem_rvalid_i) || (hit_flag_fifo_rdata && serializer_rvalid) ) 
+            && (cnt=='b0))                      hit_flag_fifo_rden  = 1'b1;
+        else if ((cnt!=0))                      hit_flag_fifo_rden = 1'b0;
+
         // Increment cnt for bursting
         if (cnt==7)                                 cnt_n = 'b0;
         else if (inct_rready_i && inct_rvalid)      cnt_n = cnt+1;
