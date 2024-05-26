@@ -84,13 +84,6 @@ module CC_DATA_REORDER_UNIT
     always_comb begin
         mem_rlast_n         = mem_rlast_i;
         cnt_n               = cnt;
-        // Latch Problem 
-        hit_flag_fifo_rden = 1'b0;
-        mem_rready = 1'b0;
-        serializer_rready = 1'b0;
-        inct_rdata = 64'b0;
-        inct_rlast = 1'b0;
-
 
         // Determine hit_n
         if (hit_flag_fifo_rden)                 hit_n = hit_flag_fifo_rdata;
@@ -105,6 +98,7 @@ module CC_DATA_REORDER_UNIT
             && ( (!hit_flag_fifo_rdata&&mem_rvalid_i) || (hit_flag_fifo_rdata && serializer_rvalid) ) 
             && (cnt=='b0))                      hit_flag_fifo_rden  = 1'b1;
         else if ((cnt!=0))                      hit_flag_fifo_rden = 1'b0;
+        else hit_flag_fifo_rden = 1'b0;
 
         // Increment cnt for bursting
         if (cnt==7)                                 cnt_n = 'b0;
@@ -113,8 +107,10 @@ module CC_DATA_REORDER_UNIT
         // Determine serializer_rready and mem_rready (output of DATA REORDER UNIT) // IMPORTANT
         if (!hit_flag_fifo_rdata & hit_flag_fifo_rden)      mem_rready          = 1'b1;
         else if (mem_rlast)                                 mem_rready          = 1'b0;
+        else mem_rready = 1'b0;
         if (hit_flag_fifo_rdata & hit_flag_fifo_rden)       serializer_rready   = 1'b1;
         else if (serializer_rlast)                          serializer_rready   = 1'b0;
+        else serializer_rready = 1'b0;
 
         // Mux between data/last from [MC R Channel] & [Data FIFO]
         if(hit_n)begin 
@@ -124,6 +120,10 @@ module CC_DATA_REORDER_UNIT
         else if(!hit_n) begin
             inct_rdata = mem_rdata_i;
             inct_rlast = mem_rlast_i;
+        end
+        else begin
+            inct_rdata = 64'b0;
+            inct_rlast = 1'b0;
         end
 
     end
