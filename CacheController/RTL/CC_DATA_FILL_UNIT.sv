@@ -61,9 +61,7 @@ module CC_DATA_FILL_UNIT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
         else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
         
-        // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden_n)    enable <= 1'b1;
-        else if (cnt==7)          enable <= 1'b0;
+        
 
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
@@ -78,17 +76,20 @@ module CC_DATA_FILL_UNIT
         wrptr = (offset_n+cnt) % 8;
 
         // Choose the data to write: Deserialize the data
-        if(enable) begin
-            if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
-            else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
-            else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
-            else if(wrptr==3)   wdata_data[255:192] = mem_rdata_i;
-            else if(wrptr==4)   wdata_data[319:256] = mem_rdata_i;
-            else if(wrptr==5)   wdata_data[383:320] = mem_rdata_i;
-            else if(wrptr==6)   wdata_data[447:384] = mem_rdata_i;
-            else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
-        end    
+        
+        if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
+        else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
+        else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
+        else if(wrptr==3)   wdata_data[255:192] = mem_rdata_i;
+        else if(wrptr==4)   wdata_data[319:256] = mem_rdata_i;
+        else if(wrptr==5)   wdata_data[383:320] = mem_rdata_i;
+        else if(wrptr==6)   wdata_data[447:384] = mem_rdata_i;
+        else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
+        
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
+        // Determine enable // IMPORTANT
+        if (miss_addr_fifo_rden_n)    enable <= 1'b1;
+        else if (cnt==7)          enable <= 1'b0;
         
         // Increment cnt for bursting: Deserialize the data
         if(cnt==7)begin
