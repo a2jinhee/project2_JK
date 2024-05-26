@@ -81,7 +81,7 @@ module CC_DATA_FILL_UNIT
         wrptr = (offset_n+cnt) % 8;
 
         // Choose the data to write: Deserialize the data
-        if(wren) begin
+        if(wren_n) begin
             if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
             else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
             else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
