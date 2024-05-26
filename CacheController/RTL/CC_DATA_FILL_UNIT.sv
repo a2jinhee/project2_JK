@@ -60,10 +60,8 @@ module CC_DATA_FILL_UNIT
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
         else if ((cnt!=0))                              miss_addr_fifo_rden_n = 1'b0;
-        
-        
 
-
+        
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
         if(miss_addr_fifo_rden_n)         waddr_n = miss_addr_fifo_rdata_i[14:6];
         else                            waddr_n = waddr;
@@ -88,8 +86,8 @@ module CC_DATA_FILL_UNIT
         
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         // Determine enable // IMPORTANT
-        if (miss_addr_fifo_rden_n)    enable <= 1'b1;
-        else if (cnt==7)          enable <= 1'b0;
+        if (miss_addr_fifo_rden_n)    enable = 1'b1;
+        else if (cnt==7)          enable = 1'b0;
         
         // Increment cnt for bursting: Deserialize the data
         if(cnt==7)begin
