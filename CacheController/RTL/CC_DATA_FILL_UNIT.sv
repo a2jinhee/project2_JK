@@ -41,7 +41,7 @@ module CC_DATA_FILL_UNIT
             waddr           <= 9'b0;
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
-            miss_addr_fifo_rden = 1'b0;
+            miss_addr_fifo_rden <= 1'b0;
             enable          <= 1'b0;
         end     
         else begin
@@ -49,7 +49,7 @@ module CC_DATA_FILL_UNIT
             waddr           <= waddr_n;
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
-            miss_addr_fifo_rden = miss_addr_fifo_rden_n;
+            miss_addr_fifo_rden <= miss_addr_fifo_rden_n;
             enable          <= enable_n;
         end 
     end 
@@ -59,7 +59,6 @@ module CC_DATA_FILL_UNIT
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
         enable_n = enable;
-        
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
