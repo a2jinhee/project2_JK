@@ -52,16 +52,13 @@ module CC_DATA_FILL_UNIT
 
     // Combinational logic
     always_comb begin
-
         // Determine enable // IMPORTANT
         if (miss_addr_fifo_rden)    enable <= 1'b1;
         else if (cnt_n==7)          enable <= 1'b0;
-        else                       enable <= enable;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden =1'b1;
         else if ((cnt!=0))                              miss_addr_fifo_rden = 1'b0;
-        else                                            miss_addr_fifo_rden = miss_addr_fifo_rden;
 
         // When miss_addr_fifo_rden==1, pop addr data and divide to addr, tag, offset
         if(miss_addr_fifo_rden)         waddr_n = miss_addr_fifo_rdata_i[14:6];
@@ -84,10 +81,7 @@ module CC_DATA_FILL_UNIT
             else if(wrptr==5)   wdata_data[383:320] = mem_rdata_i;
             else if(wrptr==6)   wdata_data[447:384] = mem_rdata_i;
             else if(wrptr==7)   wdata_data[511:448] = mem_rdata_i;
-        end
-        else begin
-            wdata_data = wdata_data;
-        end
+        end    
         //miss_addr_fifo_rden = mem_rvalid_i & mem_rready_i; 
         
         // Increment cnt for bursting: Deserialize the data
