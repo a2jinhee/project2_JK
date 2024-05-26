@@ -82,7 +82,7 @@ module CC_SERIALIZER
 
     always_comb begin
         // Latch problem 
-        rvalid_n = rvalid
+        rvalid_n = rvalid;
         fifo_rden_n = fifo_rden;
 
         // Determine rvalid output: Serializer -> INTC
