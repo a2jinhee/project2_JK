@@ -44,7 +44,7 @@ module CC_SERIALIZER
     reg         [63:0]          fifo_rdata_7, fifo_rdata_7_n;
     reg                         rlast;
     reg                         rvalid, rvalid_n;
-    reg                         start, start_n;
+    reg                         start;
     reg         [2:0]           cnt, cnt_n;
     reg         [2:0]           ptr;
     reg         [2:0]           offset, offset_n;
@@ -64,7 +64,6 @@ module CC_SERIALIZER
             rvalid                 <= 1'b0; 
             fifo_rden               <= 1'b0;
             rdata                   <= 'b0;
-            start                   <= 1'b0;
         end
         else begin
             cnt     <= cnt_n;
@@ -80,7 +79,6 @@ module CC_SERIALIZER
             rvalid                 <= rvalid_n;
             fifo_rden               <= fifo_rden_n;
             rdata                   <= rdata_n;
-            start                   <= start_n;
         end
     end
 
@@ -89,7 +87,6 @@ module CC_SERIALIZER
         rvalid_n = rvalid;
         fifo_rden_n = fifo_rden;
         rdata_n = rdata;
-        start_n = start;
 
         // Determine rvalid output: Serializer -> INTC
         if (!fifo_empty_i) rvalid_n = 1'b1;
@@ -136,13 +133,13 @@ module CC_SERIALIZER
         else if(ptr==7) rdata_n = fifo_rdata_7_n;
 
         // Determine start signal for wrapping burst (check handshake between INTC and Serializer)
-        if (rvalid_n && rready_i) start_n = 1'b1;
+        if (rvalid_n && rready_i) start = 1'b1;
         
         // Do wrapping burst
         if (cnt==7) begin
             cnt_n               = 'd0;
             rlast               = 1'b1;
-            start_n               = 1'b0;
+            start               = 1'b0;
         end
         else if (start) begin
             cnt_n               = cnt+1;
