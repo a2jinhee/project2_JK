@@ -25,7 +25,7 @@ module CC_DATA_FILL_UNIT
 
     // Fill the code here
     reg                     miss_addr_fifo_rden, miss_addr_fifo_rden_n;
-    reg                     wren;
+    reg                     wren, wren_n;
     reg     [8:0]           waddr, waddr_n;
     reg     [17:0]          wdata_tag, wdata_tag_n;
     reg     [511:0]         wdata_data;
@@ -42,6 +42,7 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= 18'b0;
             offset          <= 3'b0;
             miss_addr_fifo_rden <= 1'b0;
+            wren            <= 1'b0;
         end     
         else begin
             cnt             <= cnt_n;
@@ -49,6 +50,7 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
             miss_addr_fifo_rden <= miss_addr_fifo_rden_n;
+            wren            <= wren_n;
         end 
     end 
 
@@ -56,6 +58,7 @@ module CC_DATA_FILL_UNIT
     always_comb begin
         // Latch problem 
         miss_addr_fifo_rden_n = miss_addr_fifo_rden;
+        wren_n = wren;
 
         // Determine miss_addr_fifo_rden // IMPORTANT
         if (mem_rvalid_i & mem_rready_i & (cnt=='b0))   miss_addr_fifo_rden_n =1'b1;
@@ -78,7 +81,7 @@ module CC_DATA_FILL_UNIT
         wrptr = (offset_n+cnt) % 8;
 
         // Choose the data to write: Deserialize the data
-        if(enable) begin
+        if(wren) begin
             if(wrptr==0)        wdata_data[63:0]    = mem_rdata_i;
             else if(wrptr==1)   wdata_data[127:64]  = mem_rdata_i;
             else if(wrptr==2)   wdata_data[191:128] = mem_rdata_i;
@@ -92,15 +95,15 @@ module CC_DATA_FILL_UNIT
         
         // Increment cnt for bursting: Deserialize the data
         if(cnt==7)begin
-            wren    = 'd1;
+            wren_n    = 'd1;
             cnt_n   = 'd0;
         end
         else if(enable)begin
-            wren    = 'd0;
+            wren_n    = 'd0;
             cnt_n   = cnt+1;
         end
         else begin
-            wren    = 'd0;
+            wren_n    = 'd0;
             cnt_n   = cnt;
         end
     end
