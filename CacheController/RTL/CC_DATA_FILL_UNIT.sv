@@ -50,7 +50,7 @@ module CC_DATA_FILL_UNIT
             wdata_tag       <= wdata_tag_n;
             offset          <= offset_n;
             miss_addr_fifo_rden <= miss_addr_fifo_rden_n;
-            enable_n        <= enable;
+            enable         <= enable_n;
         end 
     end 
 
